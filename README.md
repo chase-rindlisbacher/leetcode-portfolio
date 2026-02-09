@@ -1,1 +1,2 @@
 # leetcode-portfolio
+Hello, my name is Chase Rindlisbacher and this is my Leetcode Software Development Portfolio. I've enjoyed practicing my problem solving coding abilities in putting this portfolio together and am proud to show you my work.
