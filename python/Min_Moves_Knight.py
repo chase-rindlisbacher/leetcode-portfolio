@@ -4,8 +4,10 @@
 # A knight moves in an L-shape: two squares in one direction, one square perpendicular.
 # Return -1 if the target is unreachable.
 
-def knightToNewSpace(n, start_pos, target_pos, moves = 0, positions_visited = {}, minMoves = 0):
+def knightToNewSpace(n, start_pos, target_pos, moves = 0, minMoves = 0, lastPos = None, visited = {}):
     start_x,start_y = start_pos
+    position_string = f'{start_x},{start_y}'
+    visited[position_string] = 1
     target_x,target_y = target_pos
     if(start_x == target_x and start_y == target_y):
         if (minMoves == 0):
@@ -17,22 +19,9 @@ def knightToNewSpace(n, start_pos, target_pos, moves = 0, positions_visited = {}
     if (n <= 2):
         return -1
     max_range = n - 1
-    if (f'{start_x},{start_y}' in positions_visited):
-        positions_visited[f'{start_x},{start_y}'] += 1
-    else:
-        positions_visited[f'{start_x},{start_y}'] = 1
-    hasRepeated = True # set default to true then loop through all positions_visited and if one hasn't been visited more than once, set to false
-    keys = list(positions_visited.keys())
-    for key in keys:
-        if (positions_visited[key] < 2): # check if the position has been visited 0 or 1 times
-            hasRepeated = False # mark hasRepeated correctly
-        else:
-            continue
-    if (hasRepeated == True):
-        return -1
-    knights_moves = [[2,1],[2,-1],[-2,1],[-2,-1],[1,2],[1,-2],[-1,2],[-1,-2]]
+    knights_moves = [[1,2],[1,-2],[-1,2],[-1,-2],[2,1],[2,-1],[-2,1],[-2,-1]]
     numMoves = 0
-    for x,y in knights_moves:
+    for x,y in knights_moves: # first, look at ever possibility from where you are
         if (start_x + x > max_range or start_y + y > max_range or start_x + x < 0 or start_y + y < 0):
             continue
         else:
@@ -48,12 +37,14 @@ def knightToNewSpace(n, start_pos, target_pos, moves = 0, positions_visited = {}
             continue
         else:
             new_start_pos = (start_x + x, start_y + y)
-            if (f'{start_x + x},{start_y + y}' in positions_visited):
-                if (positions_visited[f'{start_x + x},{start_y + y}'] > 2):
-                    continue
-            numMoves = knightToNewSpace(n, new_start_pos, target_pos, moves + 1, positions_visited, minMoves)
+            if (new_start_pos == lastPos):
+                continue
+            if new_start_pos in visited:
+                continue
+            numMoves = knightToNewSpace(n, new_start_pos, target_pos, moves + 1, minMoves, start_pos,visited)
             if (numMoves == 1):
-                return numMoves        
+                return numMoves
+                    
     return numMoves
 
   
@@ -76,7 +67,7 @@ test_cases = [
 
 for n, start, target in test_cases:
     try:
-        res = knightToNewSpace(n, start, target, moves = 0, positions_visited = {}, minMoves = 0)
+        res = knightToNewSpace(n, start, target)
     except Exception as e:
         res = f"error: {e}"
     print(f"n={n}, start={start}, target={target} -> {res}")
